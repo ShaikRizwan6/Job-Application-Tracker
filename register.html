@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobTrack - Register</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-left">
+        <div class="brand">
+            <div class="brand-icon">💼</div>
+            <h1>JobTrack</h1>
+        </div>
+
+        <h2>Start tracking your career.</h2>
+
+        <p>
+            Create your account and organize every
+            internship and job application in one place.
+        </p>
+
+        <div class="features">
+            <div>✓ Simple application tracking</div>
+            <div>✓ Application status management</div>
+            <div>✓ Search & filter</div>
+            <div>✓ Personal dashboard</div>
+        </div>
+    </div>
+
+    <div class="auth-card">
+        <h2>Create Account 🚀</h2>
+        <p class="auth-subtitle">
+            Start managing your applications
+        </p>
+
+        <form id="registerForm">
+            <div class="input-group">
+                <label for="registerName">Full Name</label>
+                <input
+                    type="text"
+                    id="registerName"
+                    placeholder="Enter your full name"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="registerEmail">Email</label>
+                <input
+                    type="email"
+                    id="registerEmail"
+                    placeholder="Enter your email"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="registerPassword">Password</label>
+                <div class="password-box">
+                    <input
+                        type="password"
+                        id="registerPassword"
+                        placeholder="Create a password (min 6 chars)"
+                        required
+                    >
+                    <button
+                        type="button"
+                        onclick="togglePassword('registerPassword')"
+                        aria-label="Toggle password visibility"
+                    >
+                        👁
+                    </button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirm password"
+                    required
+                >
+            </div>
+
+            <button class="primary-btn" type="submit">
+                Create Account
+            </button>
+        </form>
+
+        <p class="switch-text">
+            Already have an account?
+            <a href="index.html">Login</a>
+        </p>
+
+        <p id="registerMessage" class="message"></p>
+    </div>
+</div>
+
+<script src="js/auth.js"></script>
+
+</body>
+</html>

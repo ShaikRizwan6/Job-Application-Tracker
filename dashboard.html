@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobTrack - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">💼</div>
+            <div>
+                <h2>JobTrack</h2>
+                <span>Career Manager</span>
+            </div>
+        </div>
+
+        <nav>
+            <a href="#" class="nav-item active">
+                📊 Dashboard
+            </a>
+            <a href="#applications" class="nav-item">
+                💼 Applications
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="user-mini">
+                <div class="avatar" id="sidebarAvatar">
+                    U
+                </div>
+                <div>
+                    <strong id="sidebarName">User</strong>
+                    <small id="sidebarEmail">user@email.com</small>
+                </div>
+            </div>
+
+            <button class="logout-btn" onclick="logout()">
+                🚪 Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div>
+                <h1>
+                    Welcome back, <span id="welcomeName">User</span> 👋
+                </h1>
+                <p>
+                    Keep track of your career opportunities.
+                </p>
+            </div>
+
+            <button class="add-btn" onclick="openModal()">
+                + Add Application
+            </button>
+        </header>
+
+        <!-- STATISTICS -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon total">📋</div>
+                <div>
+                    <span>Total Applications</span>
+                    <h2 id="totalCount">0</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon applied">📤</div>
+                <div>
+                    <span>Applied</span>
+                    <h2 id="appliedCount">0</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon assessment">📝</div>
+                <div>
+                    <span>Assessments</span>
+                    <h2 id="assessmentCount">0</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon interview">🎤</div>
+                <div>
+                    <span>Interviews</span>
+                    <h2 id="interviewCount">0</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon selected">🎉</div>
+                <div>
+                    <span>Selected</span>
+                    <h2 id="selectedCount">0</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon rejected">❌</div>
+                <div>
+                    <span>Rejected</span>
+                    <h2 id="rejectedCount">0</h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- APPLICATIONS -->
+        <section class="applications-section" id="applications">
+            <div class="section-header">
+                <div>
+                    <h2>My Applications</h2>
+                    <p>Manage your job and internship applications</p>
+                </div>
+            </div>
+
+            <!-- SEARCH AND FILTER -->
+            <div class="filters">
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search company or role..."
+                    >
+                </div>
+
+                <select id="statusFilter">
+                    <option value="All">All Status</option>
+                    <option value="Applied">Applied</option>
+                    <option value="Online Assessment">Online Assessment</option>
+                    <option value="Interview">Interview</option>
+                    <option value="Selected">Selected</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+
+            <!-- APPLICATION TABLE -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Job Role</th>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationsTable">
+                    </tbody>
+                </table>
+
+                <div id="emptyState" class="empty-state">
+                    <div>📭</div>
+                    <h3>No applications found</h3>
+                    <p>Start by adding your first job application.</p>
+                    <button class="add-btn" onclick="openModal()">
+                        + Add Application
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <div>
+                <h2 id="modalTitle">Add Application</h2>
+                <p>Enter your application details</p>
+            </div>
+            <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+
+        <form id="applicationForm">
+            <input type="hidden" id="editId">
+
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="company">Company Name *</label>
+                    <input
+                        type="text"
+                        id="company"
+                        placeholder="e.g. Accenture"
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="jobRole">Job Role *</label>
+                    <input
+                        type="text"
+                        id="jobRole"
+                        placeholder="e.g. Java Developer"
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="applicationDate">Application Date *</label>
+                    <input
+                        type="date"
+                        id="applicationDate"
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="location">Location</label>
+                    <input
+                        type="text"
+                        id="location"
+                        placeholder="e.g. Hyderabad"
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="status">Status *</label>
+                    <select id="status" required>
+                        <option value="Applied">Applied</option>
+                        <option value="Online Assessment">Online Assessment</option>
+                        <option value="Interview">Interview</option>
+                        <option value="Selected">Selected</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="jobLink">Job Link</label>
+                    <input
+                        type="url"
+                        id="jobLink"
+                        placeholder="https://..."
+                    >
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="notes">Notes</label>
+                <textarea
+                    id="notes"
+                    rows="4"
+                    placeholder="Add interview notes, requirements, etc."
+                ></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="submit"
+                    class="save-btn"
+                >
+                    Save Application
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+
+</body>
+</html>

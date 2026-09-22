@@ -4,10 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobTrack - Dashboard</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <!-- ROUTE GUARD: Prevent FOUC and ensure valid session -->
+    <script>
+        (function() {
+            try {
+                var raw = localStorage.getItem("jobtrack_currentUser");
+                if (!raw || raw === "null" || raw === "undefined") {
+                    localStorage.removeItem("jobtrack_currentUser");
+                    window.location.replace("index.html");
+                    return;
+                }
+                var user = JSON.parse(raw);
+                if (!user || !user.id || !user.email) {
+                    localStorage.removeItem("jobtrack_currentUser");
+                    window.location.replace("index.html");
+                    return;
+                }
+            } catch (e) {
+                localStorage.removeItem("jobtrack_currentUser");
+                window.location.replace("index.html");
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
+
+<div id="toastContainer" class="toast-container"></div>
 
 <div class="dashboard-layout">
 
@@ -15,7 +39,7 @@
     <aside class="sidebar">
         <div class="sidebar-brand">
             <div class="brand-icon">💼</div>
-            <div>
+            <div class="brand-text">
                 <h2>JobTrack</h2>
                 <span>Career Manager</span>
             </div>
@@ -23,26 +47,27 @@
 
         <nav>
             <a href="#" class="nav-item active">
-                📊 Dashboard
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Dashboard</span>
             </a>
             <a href="#applications" class="nav-item">
-                💼 Applications
+                <span class="nav-icon">💼</span>
+                <span class="nav-label">Applications</span>
             </a>
         </nav>
 
         <div class="sidebar-bottom">
             <div class="user-mini">
-                <div class="avatar" id="sidebarAvatar">
-                    U
-                </div>
-                <div>
+                <div class="avatar" id="sidebarAvatar">U</div>
+                <div class="user-info">
                     <strong id="sidebarName">User</strong>
                     <small id="sidebarEmail">user@email.com</small>
                 </div>
             </div>
 
-            <button class="logout-btn" onclick="logout()">
-                🚪 Logout
+            <button class="logout-btn" onclick="logout()" title="Logout from JobTrack">
+                <span>🚪</span>
+                <span class="logout-text">Logout</span>
             </button>
         </div>
     </aside>
@@ -57,21 +82,26 @@
                     Welcome back, <span id="welcomeName">User</span> 👋
                 </h1>
                 <p>
-                    Keep track of your career opportunities.
+                    Keep track of your internship and job opportunities.
                 </p>
             </div>
 
-            <button class="add-btn" onclick="openModal()">
-                + Add Application
-            </button>
+            <div class="topbar-actions">
+                <button class="export-btn" onclick="exportToCSV()" title="Export your applications to CSV">
+                    📥 Export CSV
+                </button>
+                <button class="add-btn" onclick="openModal()">
+                    <span>+</span> Add Application
+                </button>
+            </div>
         </header>
 
-        <!-- STATISTICS -->
+        <!-- STATISTICS GRID -->
         <section class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon total">📋</div>
                 <div>
-                    <span>Total Applications</span>
+                    <span>Total</span>
                     <h2 id="totalCount">0</h2>
                 </div>
             </div>
@@ -117,12 +147,12 @@
             </div>
         </section>
 
-        <!-- APPLICATIONS -->
+        <!-- APPLICATIONS SECTION -->
         <section class="applications-section" id="applications">
             <div class="section-header">
                 <div>
                     <h2>My Applications</h2>
-                    <p>Manage your job and internship applications</p>
+                    <p>Track, update, and manage every stage of your job hunt</p>
                 </div>
             </div>
 
@@ -133,12 +163,12 @@
                     <input
                         type="text"
                         id="searchInput"
-                        placeholder="Search company or role..."
+                        placeholder="Search company, job role, or location..."
                     >
                 </div>
 
                 <select id="statusFilter">
-                    <option value="All">All Status</option>
+                    <option value="All">All Statuses</option>
                     <option value="Applied">Applied</option>
                     <option value="Online Assessment">Online Assessment</option>
                     <option value="Interview">Interview</option>
@@ -147,9 +177,9 @@
                 </select>
             </div>
 
-            <!-- APPLICATION TABLE -->
+            <!-- APPLICATION TABLE WRAPPER -->
             <div class="table-container">
-                <table>
+                <table id="applicationsTableWrapper">
                     <thead>
                         <tr>
                             <th>Company</th>
@@ -165,12 +195,17 @@
                 </table>
 
                 <div id="emptyState" class="empty-state">
-                    <div>📭</div>
+                    <div class="empty-icon">📭</div>
                     <h3>No applications found</h3>
-                    <p>Start by adding your first job application.</p>
-                    <button class="add-btn" onclick="openModal()">
-                        + Add Application
-                    </button>
+                    <p>Start organizing your career by adding your first application, or load sample demo data to see how it works.</p>
+                    <div class="empty-actions">
+                        <button class="add-btn" onclick="openModal()">
+                            + Add Application
+                        </button>
+                        <button class="demo-btn" onclick="loadSampleData()">
+                            ✨ Load Demo Data
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -179,15 +214,15 @@
 
 </div>
 
-<!-- ADD / EDIT MODAL -->
+<!-- ADD / EDIT APPLICATION MODAL -->
 <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-header">
             <div>
                 <h2 id="modalTitle">Add Application</h2>
-                <p>Enter your application details</p>
+                <p>Enter the details of your job or internship application</p>
             </div>
-            <button class="close-btn" onclick="closeModal()">×</button>
+            <button class="close-btn" onclick="closeModal()" title="Close (Esc)">×</button>
         </div>
 
         <form id="applicationForm">
@@ -199,7 +234,7 @@
                     <input
                         type="text"
                         id="company"
-                        placeholder="e.g. Accenture"
+                        placeholder="e.g. Google, Microsoft, Accenture"
                         required
                     >
                 </div>
@@ -209,7 +244,7 @@
                     <input
                         type="text"
                         id="jobRole"
-                        placeholder="e.g. Java Developer"
+                        placeholder="e.g. Frontend Developer, SDE 1"
                         required
                     >
                 </div>
@@ -228,12 +263,12 @@
                     <input
                         type="text"
                         id="location"
-                        placeholder="e.g. Hyderabad"
+                        placeholder="e.g. Remote, Bangalore, Hyderabad"
                     >
                 </div>
 
                 <div class="input-group">
-                    <label for="status">Status *</label>
+                    <label for="status">Application Status *</label>
                     <select id="status" required>
                         <option value="Applied">Applied</option>
                         <option value="Online Assessment">Online Assessment</option>
@@ -244,21 +279,21 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="jobLink">Job Link</label>
+                    <label for="jobLink">Job Posting URL</label>
                     <input
-                        type="url"
+                        type="text"
                         id="jobLink"
-                        placeholder="https://..."
+                        placeholder="https://company.com/careers/..."
                     >
                 </div>
             </div>
 
             <div class="input-group">
-                <label for="notes">Notes</label>
+                <label for="notes">Notes & Key Details</label>
                 <textarea
                     id="notes"
-                    rows="4"
-                    placeholder="Add interview notes, requirements, etc."
+                    rows="3"
+                    placeholder="Interview rounds, HR contact, salary/stipend, referral info, tech stack..."
                 ></textarea>
             </div>
 
@@ -272,6 +307,7 @@
                 </button>
                 <button
                     type="submit"
+                    id="submitBtn"
                     class="save-btn"
                 >
                     Save Application
@@ -281,7 +317,32 @@
     </div>
 </div>
 
-<script src="js/dashboard.js"></script>
+<!-- VIEW NOTES MODAL -->
+<div class="modal-overlay" id="noteModalOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
+        <div class="modal-header">
+            <div>
+                <h2 id="noteModalTitle">Application Notes</h2>
+                <p id="noteModalSubtitle">Company • Role</p>
+            </div>
+            <button class="close-btn" onclick="closeNoteModal()" title="Close (Esc)">×</button>
+        </div>
+
+        <div id="noteContent" class="note-display"></div>
+
+        <div class="modal-actions">
+            <button
+                type="button"
+                class="save-btn"
+                onclick="closeNoteModal()"
+            >
+                Done
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="dashboard.js"></script>
 
 </body>
 </html>

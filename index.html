@@ -4,12 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobTrack - Login</title>
+    <!-- ROUTE GUARD: If a valid session exists, automatically go to dashboard -->
+    <script>
+        (function() {
+            try {
+                var raw = localStorage.getItem("jobtrack_currentUser");
+                if (raw && raw !== "null" && raw !== "undefined") {
+                    var user = JSON.parse(raw);
+                    if (user && user.id && user.email) {
+                        window.location.replace("dashboard.html");
+                    }
+                }
+            } catch (e) {}
+        })();
+    </script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="auth.css">
 </head>
 <body>
 
+<div id="toastContainer" class="toast-container"></div>
+
 <div class="auth-container">
+    <!-- LEFT HERO PANEL -->
     <div class="auth-left">
         <div class="brand">
             <div class="brand-icon">💼</div>
@@ -24,24 +41,26 @@
         </p>
 
         <div class="features">
-            <div>✓ Track applications</div>
-            <div>✓ Monitor interviews</div>
-            <div>✓ View application statistics</div>
-            <div>✓ Stay organized</div>
+            <div>✓ Organize job & internship applications</div>
+            <div>✓ Monitor interview stages & assessments</div>
+            <div>✓ Real-time analytics & status statistics</div>
+            <div>✓ Instant search, filtering & notes</div>
         </div>
     </div>
 
+    <!-- RIGHT LOGIN FORM CARD -->
     <div class="auth-card">
         <h2>Welcome Back 👋</h2>
         <p class="auth-subtitle">Login to your JobTrack account</p>
 
         <form id="loginForm">
             <div class="input-group">
-                <label for="loginEmail">Email</label>
+                <label for="loginEmail">Email Address</label>
                 <input
                     type="email"
                     id="loginEmail"
-                    placeholder="Enter your email"
+                    placeholder="name@example.com"
+                    autocomplete="email"
                     required
                 >
             </div>
@@ -53,12 +72,14 @@
                         type="password"
                         id="loginPassword"
                         placeholder="Enter your password"
+                        autocomplete="current-password"
                         required
                     >
                     <button
                         type="button"
                         onclick="togglePassword('loginPassword')"
                         aria-label="Toggle password visibility"
+                        title="Show/Hide Password"
                     >
                         👁
                     </button>
@@ -66,13 +87,13 @@
             </div>
 
             <button class="primary-btn" type="submit">
-                Login
+                Login to Dashboard
             </button>
         </form>
 
         <p class="switch-text">
             Don't have an account?
-            <a href="register.html">Create account</a>
+            <a href="register.html">Create free account</a>
         </p>
 
         <p id="loginMessage" class="message"></p>

@@ -4,12 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobTrack - Register</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/auth.css">
+    <!-- ROUTE GUARD: If a valid session exists, automatically go to dashboard -->
+    <script>
+        (function() {
+            try {
+                var raw = localStorage.getItem("jobtrack_currentUser");
+                if (raw && raw !== "null" && raw !== "undefined") {
+                    var user = JSON.parse(raw);
+                    if (user && user.id && user.email) {
+                        window.location.replace("dashboard.html");
+                    }
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
 </head>
 <body>
 
+<div id="toastContainer" class="toast-container"></div>
+
 <div class="auth-container">
+    <!-- LEFT HERO PANEL -->
     <div class="auth-left">
         <div class="brand">
             <div class="brand-icon">💼</div>
@@ -24,13 +41,14 @@
         </p>
 
         <div class="features">
-            <div>✓ Simple application tracking</div>
+            <div>✓ Separate data storage for your account</div>
             <div>✓ Application status management</div>
-            <div>✓ Search & filter</div>
-            <div>✓ Personal dashboard</div>
+            <div>✓ Search, filter & stage tracking</div>
+            <div>✓ Free, private, and runs directly in your browser</div>
         </div>
     </div>
 
+    <!-- RIGHT REGISTRATION FORM CARD -->
     <div class="auth-card">
         <h2>Create Account 🚀</h2>
         <p class="auth-subtitle">
@@ -43,17 +61,19 @@
                 <input
                     type="text"
                     id="registerName"
-                    placeholder="Enter your full name"
+                    placeholder="e.g. Alex Johnson"
+                    autocomplete="name"
                     required
                 >
             </div>
 
             <div class="input-group">
-                <label for="registerEmail">Email</label>
+                <label for="registerEmail">Email Address</label>
                 <input
                     type="email"
                     id="registerEmail"
-                    placeholder="Enter your email"
+                    placeholder="name@example.com"
+                    autocomplete="email"
                     required
                 >
             </div>
@@ -64,13 +84,15 @@
                     <input
                         type="password"
                         id="registerPassword"
-                        placeholder="Create a password (min 6 chars)"
+                        placeholder="At least 6 characters"
+                        autocomplete="new-password"
                         required
                     >
                     <button
                         type="button"
                         onclick="togglePassword('registerPassword')"
                         aria-label="Toggle password visibility"
+                        title="Show/Hide Password"
                     >
                         👁
                     </button>
@@ -82,7 +104,8 @@
                 <input
                     type="password"
                     id="confirmPassword"
-                    placeholder="Confirm password"
+                    placeholder="Re-type your password"
+                    autocomplete="new-password"
                     required
                 >
             </div>
@@ -94,14 +117,14 @@
 
         <p class="switch-text">
             Already have an account?
-            <a href="index.html">Login</a>
+            <a href="index.html">Login here</a>
         </p>
 
         <p id="registerMessage" class="message"></p>
     </div>
 </div>
 
-<script src="js/auth.js"></script>
+<script src="auth.js"></script>
 
 </body>
 </html>
